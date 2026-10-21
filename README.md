@@ -28,6 +28,10 @@ fill = pipeline("fill-mask", model="khalidmokha/lexibert")
 fill("Мон вечкан <mask> .")
 ```
 
+## Demo
+
+`demo/` has a small web app for trying all of the models (see `demo/README.md`).
+
 ## Installation
 
 ```bash
