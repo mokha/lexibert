@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this code or the models, please cite the paper below."
+title: "LexiBERT"
+type: software
+license: MIT
+repository-code: "https://github.com/mokha/lexibert"
+doi: 10.5281/zenodo.23545487
+authors:
+  - family-names: Alnajjar
+    given-names: Khalid
+    affiliation: Rootroo Oy
+  - family-names: Hämäläinen
+    given-names: Mika
+    affiliation: Metropolia University of Applied Sciences
+  - family-names: Rueter
+    given-names: Jack
+    affiliation: University of Helsinki
+  - family-names: Partanen
+    given-names: Niko
+    affiliation: National Library of Finland
+preferred-citation:
+  type: conference-paper
+  title: "Grounding Encoders and Word Embeddings in FSTs and Dictionaries for Uralic Languages"
+  authors:
+    - family-names: Alnajjar
+      given-names: Khalid
+    - family-names: Hämäläinen
+      given-names: Mika
+    - family-names: Rueter
+      given-names: Jack
+    - family-names: Partanen
+      given-names: Niko
+  year: 2026
+  collection-title: "Proceedings of the International Workshop on Computational Linguistics for Uralic Languages (IWCLUL 2026)"

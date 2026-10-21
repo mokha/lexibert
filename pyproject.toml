@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lexibert"
+version = "1.0.0"
+description = "Inference code for LexiBERT: UD parser, unknown word model and sentiment classifier for Uralic languages"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = ["torch>=2.1", "transformers>=4.48", "safetensors", "huggingface_hub", "stanza", "numpy"]
+
+[project.optional-dependencies]
+fst = ["uralicNLP"]
+
+[project.scripts]
+lexibert-parse = "lexibert.cli:parse_main"
+lexibert-unknown = "lexibert.cli:unknown_main"
+
+[tool.setuptools]
+packages = ["lexibert"]
