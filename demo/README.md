@@ -78,7 +78,7 @@ Stop the demo with Ctrl+C.
   downloads the word list of the language (up to 7 MB) the first time.
 - The translations tab is weaker than the method of the paper: there, the candidates come from the translation graph
   of the Ve'rdd dictionary and are ranked by a LightGBM ranker and an LLM. The dictionary data is not ours to
-  distribute and the LLM is too large for the demo, so the demo ranks the nearest words in \me by their cosine
+  distribute and the LLM is too large for the demo, so the demo ranks the nearest words in MorphEmb by their cosine
   similarity plus 0.3 times their spelling similarity (the weight was tuned on a sample of Ve'rdd translations, and
   the first suggestion is a dictionary translation for 12.5% of the words of a held-out sample).
 - In the word embeddings tab, the first search in a language builds the vectors of all of its lemmas: a few seconds
