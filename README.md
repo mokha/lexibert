@@ -18,8 +18,8 @@ The data are not distributed.
 | [LexiBERT keyboard](https://huggingface.co/khalidmokha/lexibert-keyboard) | Word frequency lists and weights for keyboard autocorrection with LexiBERT and the FSTs | 33 MB |
 | [MorphEmb](https://huggingface.co/khalidmokha/morphemb) | Static word vectors for 15 Uralic languages, English, Finnish and Russian in one space | 384 MB + lemma tables and vectors per language |
 
-Everything, including the parsers trained on Erzya and North Sámi only, all random seeds, the BiLSTM parsers, the
-translation rankers and the encoders of the ablation, is also in the Zenodo record <https://doi.org/10.5281/zenodo.23545487>.
+All of the models, together with the parsers trained on Erzya and North Sámi only, all random seeds and the encoders
+of the ablation, are also in the Zenodo record <https://doi.org/10.5281/zenodo.23545486>.
 
 The encoder needs no code from this repository:
 
@@ -87,12 +87,12 @@ model.analyse("myv", "кудосо")
 
 The `.vec.gz` files have vectors for the most frequent words of our corpora and the words that the FST can analyse,
 in fastText text format (e.g. for Gensim). For any other word form, the vector can be built from its FST analyses
-with the `load_morphemb` function, which is being added to [MLTools](https://github.com/mikahama/MLTools) and is not
-released there yet:
+with the `load_morphemb` function of [MLTools](https://github.com/mikahama/MLTools):
 
 ```python
+# pip install git+https://github.com/mikahama/MLTools uralicNLP
 from MLTools.LM import word_embeddings
-model = word_embeddings.load_morphemb("morphemb", languages=["myv", "fin"])
+model = word_embeddings.load_morphemb("khalidmokha/morphemb", languages=["myv", "fin"])
 model.nearest_neighbors("кудо", "myv", n=5, target_lang="fin")
 ```
 

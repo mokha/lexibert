@@ -4,7 +4,7 @@ title: "LexiBERT"
 type: software
 license: MIT
 repository-code: "https://github.com/mokha/lexibert"
-doi: 10.5281/zenodo.23545487
+doi: 10.5281/zenodo.23545486
 authors:
   - family-names: Alnajjar
     given-names: Khalid
