@@ -75,3 +75,6 @@ $PY scripts/25_llm_rerank.py --url http://localhost:8091/v1 --split test --dump 
 $PY scripts/20_tables_resources.py
 $PY scripts/21_tables_results.py
 $PY scripts/22_numbers.py
+
+# sub-word tokens per word of the tokenizer (Section 3)
+$PY scripts/28_fertility.py
