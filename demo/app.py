@@ -418,6 +418,6 @@ with gr.Blocks(title="LexiBERT") as demo:
 
 if __name__ == "__main__":
     import pyhfst
-    print("FST lookups: pyhfst,", "compiled (fast)" if pyhfst.Transducer.__module__.startswith("c_") else
+    print("FST lookups: pyhfst,", "compiled (fast)" if getattr(pyhfst, "CYTHON", False) else
           "pure Python (slower; see demo/README.md for compiling it)", flush=True)
     demo.queue(default_concurrency_limit=2).launch()

@@ -1,4 +1,5 @@
 gradio==6.30.0
 uralicNLP
+pyhfst>=1.4.1
 rapidfuzz
 Unidecode

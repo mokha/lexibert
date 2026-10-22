@@ -13,6 +13,7 @@ The data are not distributed.
 |---|---|---|
 | [LexiBERT](https://huggingface.co/khalidmokha/lexibert) | The encoder: a standard Hugging Face ModernBERT model | 564 MB |
 | [LexiBERT UD](https://huggingface.co/khalidmokha/lexibert-ud-uralic) | UPOS, UFeats, lemmas and dependencies for 11 Uralic treebanks | 576 MB |
+| [LexiBERT UD, single treebank](https://huggingface.co/khalidmokha/lexibert-ud-single-treebank) | The parsers trained on Erzya or North Sámi only, 3 seeds each | 6 × 576 MB |
 | [LexiBERT unknown words](https://huggingface.co/khalidmokha/lexibert-unknown-words) | Lemma, tags and inflection class (contlex) of words that the FST does not know | 613 MB |
 | [LexiBERT sentiment](https://huggingface.co/khalidmokha/lexibert-sentiment-sst2) | Sentiment classifier trained on English SST-2 only | 562 MB |
 | [LexiBERT keyboard](https://huggingface.co/khalidmokha/lexibert-keyboard) | Word frequency lists and weights for keyboard autocorrection with LexiBERT and the FSTs | 33 MB |
@@ -40,8 +41,6 @@ git clone https://github.com/mokha/lexibert.git && cd lexibert
 python3 -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu   # Linux, CPU only
 pip install -e . -r demo/requirements.txt
-pip install "cython<3.3" setuptools wheel                            # optional: compiled pyhfst, 3x faster FSTs
-pip install --no-binary pyhfst --no-build-isolation --force-reinstall --no-deps --no-cache-dir pyhfst
 python demo/app.py                                                   # then open http://127.0.0.1:7860
 ```
 
