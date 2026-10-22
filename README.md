@@ -39,6 +39,8 @@ git clone https://github.com/mokha/lexibert.git && cd lexibert
 python3 -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu   # Linux, CPU only
 pip install -e . -r demo/requirements.txt
+pip install "cython<3.3" setuptools wheel                            # optional: compiled pyhfst, 3x faster FSTs
+pip install --no-binary pyhfst --no-build-isolation --force-reinstall --no-deps --no-cache-dir pyhfst
 python demo/app.py                                                   # then open http://127.0.0.1:7860
 ```
 

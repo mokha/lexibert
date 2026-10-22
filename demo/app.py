@@ -417,4 +417,7 @@ with gr.Blocks(title="LexiBERT") as demo:
         se_text.submit(sentiment, se_text, se_out)
 
 if __name__ == "__main__":
+    import pyhfst
+    print("FST lookups: pyhfst,", "compiled (fast)" if pyhfst.Transducer.__module__.startswith("c_") else
+          "pure Python (slower; see demo/README.md for compiling it)", flush=True)
     demo.queue(default_concurrency_limit=2).launch()

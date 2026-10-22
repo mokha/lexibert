@@ -61,13 +61,27 @@ pip install -e .
 pip install -r demo/requirements.txt
 ```
 
+Finally, compile the fast version of [pyhfst](https://github.com/Rootroo-ltd/pyhfst), which runs the FSTs for
+UralicNLP. It looks words up about three times faster than the pure Python version that pip installs by default (this
+needs a C compiler, e.g. `build-essential` on Ubuntu or the Xcode command line tools on macOS; without one, skip it and
+the demo still works, only slower):
+
+```bash
+pip install "cython<3.3" setuptools wheel
+pip install --no-binary pyhfst --no-build-isolation --force-reinstall --no-deps --no-cache-dir pyhfst
+python -c "import pyhfst; print('compiled' if pyhfst.Transducer.__module__.startswith('c_') else 'pure Python')"
+```
+
+The last line should print `compiled`.
+
 ## 4. Run
 
 ```bash
 python demo/app.py
 ```
 
-When the terminal shows `Running on local URL: http://127.0.0.1:7860`, open <http://127.0.0.1:7860> in your browser.
+The demo first prints which version of pyhfst it uses. When the terminal shows
+`Running on local URL: http://127.0.0.1:7860`, open <http://127.0.0.1:7860> in your browser.
 Stop the demo with Ctrl+C.
 
 ## What to expect
