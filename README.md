@@ -18,8 +18,9 @@ The data are not distributed.
 | [LexiBERT keyboard](https://huggingface.co/khalidmokha/lexibert-keyboard) | Word frequency lists and weights for keyboard autocorrection with LexiBERT and the FSTs | 33 MB |
 | [MorphEmb](https://huggingface.co/khalidmokha/morphemb) | Static word vectors for 15 Uralic languages, English, Finnish and Russian in one space | 384 MB + lemma tables and vectors per language |
 
-All of the models, together with the parsers trained on Erzya and North Sámi only, all random seeds and the encoders
-of the ablation, are also in the Zenodo record <https://doi.org/10.5281/zenodo.23545486>.
+All of the models, all random seeds and the encoders of the ablation are also in the Zenodo record
+<https://doi.org/10.5281/zenodo.23545486>. The UD parsers, including those trained on Erzya and North Sámi only, are in
+its version 1.0.0 (<https://doi.org/10.5281/zenodo.23545487>).
 
 The encoder needs no code from this repository:
 
