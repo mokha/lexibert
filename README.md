@@ -30,7 +30,16 @@ fill("Мон вечкан <mask> .")
 
 ## Demo
 
-`demo/` has a small web app for trying all of the models (see `demo/README.md`).
+`demo/` has a web app for trying all of the models in the browser. In short (the full instructions, also for
+Windows, are in [demo/README.md](demo/README.md)):
+
+```bash
+git clone https://github.com/mokha/lexibert.git && cd lexibert
+python3 -m venv .venv && source .venv/bin/activate
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # Linux, CPU only
+pip install -e . -r demo/requirements.txt
+python demo/app.py                                                   # then open http://127.0.0.1:7860
+```
 
 ## Installation
 
