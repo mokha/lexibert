@@ -8,6 +8,8 @@ A small web app for trying all of the released models in the browser:
 | Unknown words | [lexibert-unknown-words](https://huggingface.co/khalidmokha/lexibert-unknown-words) | lemma, part of speech, tags and inflection class of any word form |
 | Masked words | [lexibert](https://huggingface.co/khalidmokha/lexibert) | the encoder itself: the most likely words for `<mask>` |
 | Word embeddings | [morphemb](https://huggingface.co/khalidmokha/morphemb) | nearest words in the same or another language, similarity of two words |
+| Keyboard | [lexibert](https://huggingface.co/khalidmokha/lexibert) + [lexibert-keyboard](https://huggingface.co/khalidmokha/lexibert-keyboard) | corrects text typed on a Finnish or Russian keyboard (missing special letters, typos) |
+| Translations | [morphemb](https://huggingface.co/khalidmokha/morphemb) | translation suggestions into Finnish or English (see the limitation below) |
 | Sentiment | [lexibert-sentiment-sst2](https://huggingface.co/khalidmokha/lexibert-sentiment-sst2) | positive or negative |
 
 Everything runs on the CPU of your own computer; no GPU is needed. Every tab has examples that can be clicked.
@@ -72,7 +74,13 @@ Stop the demo with Ctrl+C.
 
 - The first time a tab is used, its model is downloaded from Hugging Face (about 600 MB per model, 1.2 GB for the
   word embeddings) and loaded, which takes a minute or more. After that, the answers come in about a second.
-- The FST of a language is downloaded from UralicNLP the first time the language is used.
+- The FST of a language is downloaded from UralicNLP the first time the language is used, and the keyboard tab
+  downloads the word list of the language (up to 7 MB) the first time.
+- The translations tab is weaker than the method of the paper: there, the candidates come from the translation graph
+  of the Ve'rdd dictionary and are ranked by a LightGBM ranker and an LLM. The dictionary data is not ours to
+  distribute and the LLM is too large for the demo, so the demo ranks the nearest words in \me by their cosine
+  similarity plus 0.3 times their spelling similarity (the weight was tuned on a sample of Ve'rdd translations, and
+  the first suggestion is a dictionary translation for 12.5% of the words of a held-out sample).
 - In the word embeddings tab, the first search in a language builds the vectors of all of its lemmas: a few seconds
   for English, Finnish and Russian, a minute or two for a Uralic language.
 - The downloads are kept in the Hugging Face cache (`~/.cache/huggingface`) and in the folder of UralicNLP, so the

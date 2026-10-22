@@ -15,6 +15,7 @@ The data are not distributed.
 | [LexiBERT UD](https://huggingface.co/khalidmokha/lexibert-ud-uralic) | UPOS, UFeats, lemmas and dependencies for 11 Uralic treebanks | 576 MB |
 | [LexiBERT unknown words](https://huggingface.co/khalidmokha/lexibert-unknown-words) | Lemma, tags and inflection class (contlex) of words that the FST does not know | 613 MB |
 | [LexiBERT sentiment](https://huggingface.co/khalidmokha/lexibert-sentiment-sst2) | Sentiment classifier trained on English SST-2 only | 562 MB |
+| [LexiBERT keyboard](https://huggingface.co/khalidmokha/lexibert-keyboard) | Word frequency lists and weights for keyboard autocorrection with LexiBERT and the FSTs | 33 MB |
 | [MorphEmb](https://huggingface.co/khalidmokha/morphemb) | Static word vectors for 15 Uralic languages, English, Finnish and Russian in one space | 384 MB + lemma tables and vectors per language |
 
 Everything, including the parsers trained on Erzya and North Sámi only, all random seeds, the BiLSTM parsers, the

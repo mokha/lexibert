@@ -8,12 +8,13 @@ from transformers import AutoModelForMaskedLM, AutoTokenizer
 from lexibert import Parser, SentimentClassifier, UnknownWordModel
 import morphemb
 from morphemb import MorphEmb
+from keyboard import Keyboard
 
 torch.set_num_threads(min(4, os.cpu_count() or 2))
 LOCAL = os.environ.get("LEXIBERT_LOCAL")  # a folder with the model folders, for testing without the Hub
 REPOS = {"encoder": "khalidmokha/lexibert", "ud": "khalidmokha/lexibert-ud-uralic",
          "unknown": "khalidmokha/lexibert-unknown-words", "sentiment": "khalidmokha/lexibert-sentiment-sst2",
-         "morphemb": "khalidmokha/morphemb"}
+         "morphemb": "khalidmokha/morphemb", "keyboard": "khalidmokha/lexibert-keyboard"}
 
 LANGS = {"myv": "Erzya", "mdf": "Moksha", "kpv": "Komi-Zyrian", "koi": "Komi-Permyak", "udm": "Udmurt",
          "sme": "North Sámi", "sms": "Skolt Sámi", "smn": "Inari Sámi", "olo": "Livvi", "krl": "Karelian",
@@ -189,6 +190,61 @@ def neighbours(word, lang, target, n, limit, progress=gr.Progress()):
     return [[w, s] for w, s in res], note
 
 
+_keyboards = {}
+
+
+def keyboard(lang):
+    with _lock:
+        if lang not in _keyboards:
+            f = folder("keyboard", allow_patterns=["config.json", f"lexicons/{lang}.*"])
+            _keyboards[lang] = Keyboard(f, lang, lambda w: fst(w, lang))
+        return _keyboards[lang]
+
+
+def autocorrect(text, lang):
+    tokens = tokenize(text)
+    if not tokens:
+        raise gr.Error("Write a sentence.")
+    if len(tokens) > 40:
+        raise gr.Error("Please write at most 40 words at a time.")
+    ensure_fst(lang)
+    kb, (tok, model) = keyboard(lang), get("encoder")
+    out, rows = [], []
+    for t in tokens:
+        if len(t) >= 3 and t.isalpha():
+            best, scored = kb.correct(tok, model, " ".join(out), t)
+            if best != t:
+                rows.append([t, best, ", ".join(f"{c} ({s:.2f})" for c, s, *_ in scored[:4])])
+            out.append(best)
+        else:
+            out.append(t)
+    shown = " ".join(f"<b>{html.escape(o)}</b>" if o != t else html.escape(o) for o, t in zip(out, tokens))
+    return f"<p style='font-size:1.1em'>{shown}</p>", rows
+
+
+# the weight of spelling similarity, tuned on a sample of Ve'rdd translations (see demo/README.md)
+SPELLING_WEIGHT = 0.3
+
+
+def translate(word, lang, target, n, progress=gr.Progress()):
+    from rapidfuzz.distance import Levenshtein
+    from unidecode import unidecode
+    word = word.strip()
+    if not word:
+        raise gr.Error("Write a word.")
+    me = get("morphemb")
+    m = me.matrix(target, progress)[:20000].float()
+    words = me.lemma_lists[target][:20000]
+    cos, idx = (m @ torch.nn.functional.normalize(me.vector(word, lang), dim=0)).topk(50)
+    a = unidecode(word).lower()
+    rows = []
+    for c, i in zip(cos.tolist(), idx.tolist()):
+        sim = Levenshtein.normalized_similarity(a, unidecode(words[i]).lower())
+        rows.append([words[i], round(c, 3), round(sim, 3), round(c + SPELLING_WEIGHT * sim, 3)])
+    rows.sort(key=lambda r: -r[3])
+    return rows[:int(n)]
+
+
 def similarity(a, la, b, lb):
     if not a.strip() or not b.strip():
         raise gr.Error("Write two words.")
@@ -301,6 +357,54 @@ with gr.Blocks(title="LexiBERT") as demo:
         s_out = gr.Number(label="Cosine similarity")
         gr.Examples([["кудо", "myv", "talo", "fin"], ["тӧдны", "kpv", "know", "eng"]], [s_a, s_la, s_b, s_lb])
         s_btn.click(similarity, [s_a, s_la, s_b, s_lb], s_out)
+
+    with gr.Tab("Keyboard"):
+        gr.Markdown("Autocorrection for text typed on a Finnish or Russian keyboard, where the special letters of the "
+                    "language are missing or a key next to the right one was pressed. The candidates of each word are "
+                    "its versions with the missing letters restored and the words within one edit that occur in our "
+                    "corpora or that the FST accepts, and they are ranked by \\enc, the corpus frequency and the "
+                    "number of edits. Changed words are shown in bold.".replace("\\enc", "LexiBERT"))
+        with gr.Row():
+            kb_text = gr.Textbox(label="Typed sentence", lines=2, scale=3)
+            kb_lang = gr.Dropdown(choices(URALIC), value="kpv", label="Language", scale=1)
+        kb_btn = gr.Button("Correct", variant="primary")
+        kb_out = gr.HTML()
+        kb_table = gr.Dataframe(headers=["Typed", "Corrected", "Best candidates (score)"], wrap=True)
+        KB_EXAMPLES = [["Медборын лэччылі Нярьян-Маре тоже оленеводствоо , Нарьян-Марскей ОПХ-а .", "kpv"],
+                       ["Ютасть мазый шканзо лемзер чувтыненть .", "myv"],
+                       ["Козя ся колхозсь и сероса , и ярмакса .", "mdf"],
+                       ["Ferte mearridit makkar deattu dáidda galgá bidjat .", "sme"],
+                       ["– Ice olen karjalaine Kiihtelysvuaraspäi .", "olo"],
+                       ["Hyö tultih suon laitah , heitettih kesseli tiellä .", "krl"],
+                       ["De suu vaaldi kaavân tõt ooumaž , son vuõʹlji .", "sms"],
+                       ["Nece rad pakiceb vastusenpidändad da väged .", "vep"]]
+        if KB_EXAMPLES:
+            gr.Examples(KB_EXAMPLES, [kb_text, kb_lang], label="Examples (UD test sentences with the special letters of one word missing)")
+        kb_btn.click(autocorrect, [kb_text, kb_lang], [kb_out, kb_table])
+        kb_text.submit(autocorrect, [kb_text, kb_lang], [kb_out, kb_table])
+
+    with gr.Tab("Translations"):
+        gr.Markdown("Translation suggestions for adding to a dictionary: the words of the target language that are "
+                    "closest to the word in MorphEmb, reranked with their spelling similarity, which helps with "
+                    "loanwords and related languages. **Limitation:** in the paper, the suggestions come from the "
+                    "translation graph of the Ve'rdd dictionary, a ranker and an LLM. The dictionary data is not "
+                    "ours to distribute and the LLM is too large for this demo, so the demo uses only the word "
+                    "embeddings and gives weaker suggestions than the method of the paper.")
+        with gr.Row():
+            tr_word = gr.Textbox(label="Word", scale=2)
+            tr_lang = gr.Dropdown(choices(URALIC), value="myv", label="Language of the word", scale=1)
+            tr_target = gr.Dropdown(choices(["fin", "eng"]), value="fin", label="Translate into", scale=1)
+            tr_n = gr.Slider(1, 20, 10, step=1, label="Suggestions", scale=1)
+        tr_btn = gr.Button("Suggest translations", variant="primary")
+        tr_table = gr.Dataframe(headers=["Suggestion", "Cosine", "Spelling", "Score"])
+        TR_EXAMPLES = [["naini", "krl", "fin"], ["vägivaldu", "olo", "fin"], ["kučču", "krl", "fin"],
+                       ["kontsert", "liv", "fin"], ["vaattâđ", "smn", "fin"], ["energiija", "sme", "fin"],
+                       ["заводитны", "kpv", "eng"], ["дружба", "kpv", "eng"], ["договор", "myv", "fin"],
+                       ["преподаватель", "mrj", "fin"], ["ритм", "mhr", "fin"]]
+        if TR_EXAMPLES:
+            gr.Examples(TR_EXAMPLES, [tr_word, tr_lang, tr_target],
+                        label="Examples from Ve'rdd (the first suggestion is the dictionary translation)")
+        tr_btn.click(translate, [tr_word, tr_lang, tr_target, tr_n], tr_table)
 
     with gr.Tab("Sentiment"):
         gr.Markdown("A classifier trained on English SST-2 only. In the paper it was tested on Erzya, Moksha, "
