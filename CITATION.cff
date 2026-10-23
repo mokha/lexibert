@@ -17,7 +17,7 @@ authors:
     affiliation: University of Helsinki
   - family-names: Partanen
     given-names: Niko
-    affiliation: National Library of Finland
+    affiliation: University of Helsinki
 preferred-citation:
   type: conference-paper
   title: "Grounding Encoders and Word Embeddings in FSTs and Dictionaries for Uralic Languages"
